@@ -132,7 +132,8 @@ For a Store app the recommended route is:
    terminal, then waits for Enter. In a shell the console is shared, so
    `tail` without arguments still reads stdin. The manifest version is the
    Cargo version reduced to `major.minor.patch.0`: MSIX only accepts a numeric
-   quad and the
-   Store reserves the fourth field, so a prerelease and its final release map
-   to the same MSIX version; bump the patch before shipping a second build of
-   the same version.
+   quad and the Store reserves the fourth field, so it cannot carry a
+   prerelease tag. Betas therefore set `[package.metadata.msix] version` in
+   `Cargo.toml` to `0.99.N.0` (beta N of 1.0.0): the installed package shows
+   it is a beta, and the final `1.0.0.0` still sorts after it (Store versions
+   can only grow). Drop the override for the release.

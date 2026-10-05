@@ -21,8 +21,10 @@ All four must pass before a change is done.
 The script then runs the Windows App Certification Kit (UAC prompt; report in
 `target\msix\wack-report.xml`). Pass `-SkipCertification` in non-interactive runs.
 
-The MSIX version comes from `Cargo.toml`; never hard-code it in
-`packaging/msix/AppxManifest.xml` (its `{{...}}` tokens are filled by the script).
+The MSIX version comes from `Cargo.toml` (`[package.metadata.msix] version`
+while in beta, `0.99.N.0` for beta N; otherwise the crate version); never
+hard-code it in `packaging/msix/AppxManifest.xml` (its `{{...}}` tokens are
+filled by the script).
 Likewise `build.rs` embeds the exe's VERSIONINFO resource from `Cargo.toml`
 (via `winresource`, which needs `rc.exe` from the Windows SDK); it is skipped
 when the target OS is not Windows.

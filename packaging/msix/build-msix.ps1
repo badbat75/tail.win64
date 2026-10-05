@@ -7,8 +7,9 @@
   tokens filled) under target\msix\stage, then runs makeappx. The package
   version comes from Cargo.toml: MSIX needs a numeric quad, so
   "1.0.0-beta.1" becomes "1.0.0.0". The fourth field stays 0 because the
-  Microsoft Store reserves it. The .msix file name keeps the full crate
-  version (tail-win_1.0.0-beta.1_x64.msix).
+  Microsoft Store reserves it. A `version` under [package.metadata.msix]
+  overrides it (betas use 0.99.N.0, see Cargo.toml). The .msix file name
+  keeps the full crate version (tail-win_1.0.0-beta.1_x64.msix).
 
   The identity defaults are the Partner Center values of the reserved Store
   product "tail for Windows" (Product management > Product identity); the
@@ -65,6 +66,14 @@ if ($cargoToml -notmatch '(?m)^version\s*=\s*"(\d+)\.(\d+)\.(\d+)[^"]*"') {
 }
 $crateVersion = ($Matches[0] -replace '^version\s*=\s*"|"$', '')
 $msixVersion = "$($Matches[1]).$($Matches[2]).$($Matches[3]).0"
+
+# Optional override: `version` under [package.metadata.msix] (beta builds).
+if ($cargoToml -match '(?ms)^\[package\.metadata\.msix\][^\[]*?^version\s*=\s*"([^"]*)"') {
+    $msixVersion = $Matches[1]
+    if ($msixVersion -notmatch '^\d+\.\d+\.\d+\.0$') {
+        throw "[package.metadata.msix] version must be a numeric quad ending in .0, got '$msixVersion'."
+    }
+}
 
 $triple = if ($Arch -eq 'arm64') { 'aarch64-pc-windows-msvc' } else { 'x86_64-pc-windows-msvc' }
 if (-not $SkipBuild) {
