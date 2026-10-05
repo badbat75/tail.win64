@@ -26,7 +26,7 @@ mod imp {
     use windows_sys::Win32::Storage::FileSystem::{
         FILE_ID_INFO, FILE_TYPE_DISK, FileIdInfo, GetFileInformationByHandleEx, GetFileType,
     };
-    use windows_sys::Win32::System::Console::GetConsoleProcessList;
+    use windows_sys::Win32::System::Console::{GetConsoleProcessList, SetConsoleTitleW};
     use windows_sys::Win32::System::Threading::{OpenProcess, PROCESS_SYNCHRONIZE, WaitForSingleObject};
 
     pub fn file_id(file: &File) -> io::Result<FileId> {
@@ -81,6 +81,12 @@ mod imp {
         let count = unsafe { GetConsoleProcessList(pids.as_mut_ptr(), pids.len() as u32) };
         count == 1
     }
+
+    pub fn set_console_title(title: &str) {
+        let wide: Vec<u16> = title.encode_utf16().chain(std::iter::once(0)).collect();
+        // SAFETY: `wide` is a NUL-terminated UTF-16 string that outlives the call.
+        unsafe { SetConsoleTitleW(wide.as_ptr()) };
+    }
 }
 
 #[cfg(not(windows))]
@@ -106,6 +112,8 @@ mod imp {
     pub fn sole_console_process() -> bool {
         false
     }
+
+    pub fn set_console_title(_title: &str) {}
 }
 
 /// Returns the identity of an open file.
@@ -127,6 +135,12 @@ pub fn process_alive(pid: u32) -> bool {
 /// Start menu or Explorer in a window of its own, not from a terminal.
 pub fn sole_console_process() -> bool {
     imp::sole_console_process()
+}
+
+/// Sets the title of the console window, which otherwise shows the path of
+/// tail.exe (the package install folder when launched from the Start menu).
+pub fn set_console_title(title: &str) {
+    imp::set_console_title(title)
 }
 
 /// Standard input as a `File` when it is redirected from a regular file

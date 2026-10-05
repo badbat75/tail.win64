@@ -44,7 +44,7 @@ This is a beta release.
 
 ### What's new in this version
 
-First public beta.
+The Start menu window is now titled "tail for Windows" instead of showing the path of tail.exe.
 
 ### Product features
 

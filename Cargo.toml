@@ -1,6 +1,6 @@
 [package]
 name = "tail-win"
-version = "1.0.0-beta.1"
+version = "1.0.0-beta.2"
 edition = "2024"
 rust-version = "1.85"
 description = "A native Windows port of GNU tail (clean-room, behavior-compatible)"
@@ -12,7 +12,7 @@ repository = "https://github.com/badbat75/tail.win64"
 # final 1.0.0.0 still sorts after it. Remove it for the 1.0.0 release; without
 # it the package version is major.minor.patch.0 of the crate version.
 [package.metadata.msix]
-version = "0.99.1.0"
+version = "0.99.2.0"
 
 [lib]
 name = "tail_win"

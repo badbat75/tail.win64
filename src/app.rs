@@ -29,6 +29,7 @@ Press Enter to close this window.\n";
 
 /// Prints the help and a hint, then waits for Enter so the window stays open.
 fn started_outside_terminal() -> ExitCode {
+    sys::set_console_title("tail for Windows");
     if let Err(Exit::Info(help)) = cli::parse(["tail", "--help"]) {
         print!("{help}");
     }

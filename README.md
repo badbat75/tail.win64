@@ -37,7 +37,7 @@ cargo test                      # unit + end-to-end tests
 ## MSIX package
 
 ```powershell
-.\packaging\msix\build-msix.ps1                  # target\msix\tail-win_1.0.0-beta.1_x64.msix (unsigned)
+.\packaging\msix\build-msix.ps1                  # target\msix\tail-win_1.0.0-beta.2_x64.msix (unsigned)
 .\packaging\msix\build-msix.ps1 -Arch arm64      # needs: rustup target add aarch64-pc-windows-msvc
 .\packaging\msix\build-msix.ps1 -CertificateThumbprint <sha1>   # signed, for sideloading
 .\packaging\msix\build-msix.ps1 -SkipCertification              # no App Certification Kit run
