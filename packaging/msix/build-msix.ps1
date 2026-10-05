@@ -9,9 +9,13 @@
   "1.0.0-beta.1" becomes "1.0.0.0". The fourth field stays 0 because the
   Microsoft Store reserves it.
 
+  The identity defaults are the Partner Center values of the reserved Store
+  product "tail for Windows" (Product management > Product identity); the
+  manifest DisplayName must stay equal to that reserved name.
+
   The package is unsigned unless -CertificateThumbprint or -PfxPath is given.
-  For a Store submission leave it unsigned: Partner Center signs it, and
-  -IdentityName / -Publisher must then match the values Partner Center shows.
+  For a Store submission leave it unsigned: Partner Center signs it. To sign a
+  sideload build, the certificate subject must equal -Publisher.
 
 .EXAMPLE
   .\packaging\msix\build-msix.ps1
@@ -20,9 +24,9 @@
 #>
 [CmdletBinding()]
 param(
-    [string]$IdentityName = 'tail-win',
-    [string]$Publisher = 'CN=tail-win',
-    [string]$PublisherDisplayName = 'tail-win',
+    [string]$IdentityName = 'BadBat75.tailforWindows',
+    [string]$Publisher = 'CN=932406D5-4DDE-483C-9D6C-7517FB42206B',
+    [string]$PublisherDisplayName = 'BadBat75',
     [ValidateSet('x64', 'arm64')]
     [string]$Arch = 'x64',
     [string]$CertificateThumbprint,

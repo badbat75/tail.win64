@@ -47,7 +47,9 @@ Start menu entry; it registers an app execution alias, so `tail` is on PATH
 after install. The MSIX version is derived from `Cargo.toml`
 (`1.0.0-beta.1` becomes `1.0.0.0`; the Store reserves the fourth field).
 To sideload, the certificate subject must equal `-Publisher` and the
-certificate must be trusted on the machine. For the Store, submit the unsigned
-package with `-IdentityName` and `-Publisher` taken from Partner Center.
+certificate must be trusted on the machine. The package identity defaults to
+the Store reservation (`BadBat75.tailforWindows`, publisher
+`CN=932406D5-4DDE-483C-9D6C-7517FB42206B`), so the unsigned package can be
+submitted to Partner Center as is.
 
 Design rationale and Windows-specific decisions: [docs/DESIGN.md](docs/DESIGN.md).
