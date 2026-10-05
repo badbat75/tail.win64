@@ -2,7 +2,9 @@
 
 Source of truth for the Partner Center submission of the reserved product
 "tail for Windows". Edit here first, then paste into Partner Center. Images
-live next to this file: `screenshots/` (PNG, at least 1366x768).
+live next to this file: `screenshots/` (PNG, at least 1366x768) and `logos/`
+(Store logos: `tile-300x300.png` is the 1:1 app tile icon, `tile-150x150.png`
+and `tile-71x71.png` the other tile sizes; same drawing as the MSIX assets).
 
 ## Properties
 
@@ -65,7 +67,7 @@ tail, log viewer, follow log, command line, GNU coreutils, tail -f, developer to
 
 ### Restricted capability justification (runFullTrust)
 
-tail is a command-line tool (a Win32 console executable) started from the terminal through an app execution alias. It must read arbitrary files and standard input that the user names on the command line, and monitor them for changes, which requires full trust. It has no UI, makes no network connections and collects no data.
+tail is a command-line tool (a Win32 console executable) started from the terminal through an app execution alias. It must read arbitrary files and standard input that the user names on the command line, and monitor them for changes, which requires full trust. It has no graphical UI (its Start menu entry only opens a console showing usage help), makes no network connections and collects no data.
 
 ## Age rating
 

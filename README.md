@@ -47,11 +47,12 @@ After packing, the script runs the Windows App Certification Kit (the checks
 Partner Center applies) and writes `target\msix\wack-report.xml`; it fails if
 the kit reports FAIL. `appcert.exe` needs elevation, so expect a UAC prompt.
 
-Requires the Windows SDK (`makeappx.exe`, `signtool.exe`). The package has no
-Start menu entry; it registers an app execution alias, so `tail` is on PATH
-after install. The MSIX version is derived from `Cargo.toml`
-(`1.0.0-beta.1` becomes `1.0.0.0` inside the package, the Store reserves the
-fourth field; the file name keeps the full version).
+Requires the Windows SDK (`makeappx.exe`, `signtool.exe`). The package
+registers an app execution alias, so `tail` is on PATH after install. Its
+Start menu entry (required by the Store) opens a console with the help.
+The MSIX version is derived from `Cargo.toml` (`1.0.0-beta.1` becomes
+`1.0.0.0` inside the package, the Store reserves the fourth field; the file
+name keeps the full version).
 To sideload, the certificate subject must equal `-Publisher` and the
 certificate must be trusted on the machine. The package identity defaults to
 the Store reservation (`BadBat75.tailforWindows`, publisher

@@ -1,7 +1,7 @@
 //! Glue between the parsed command line, the inputs and the output.
 
 use std::ffi::OsString;
-use std::io::{self, Write};
+use std::io::{self, IsTerminal, Write};
 use std::process::ExitCode;
 
 use crate::cli::{self, Exit, FollowMode, Settings};
@@ -19,12 +19,35 @@ enum Failure {
     Input(String, Option<Box<Watch>>),
 }
 
+/// Shown under the help when tail runs in a console of its own (Start menu,
+/// Explorer), where reading the keyboard as GNU does would look like a hang.
+const OUTSIDE_TERMINAL_HINT: &str = "\n\
+tail is a command-line tool. Open a terminal (Windows Terminal, PowerShell or\n\
+Command Prompt) and run it there, for example:  tail -f app.log\n\
+\n\
+Press Enter to close this window.\n";
+
+/// Prints the help and a hint, then waits for Enter so the window stays open.
+fn started_outside_terminal() -> ExitCode {
+    if let Err(Exit::Info(help)) = cli::parse(["tail", "--help"]) {
+        print!("{help}");
+    }
+    print!("{OUTSIDE_TERMINAL_HINT}");
+    let _ = io::stdout().flush();
+    let _ = io::stdin().read_line(&mut String::new());
+    ExitCode::SUCCESS
+}
+
 /// Runs `tail` with the given `argv` (program name included).
 pub fn run<I>(argv: I) -> ExitCode
 where
     I: IntoIterator,
     I::Item: Into<OsString>,
 {
+    let argv: Vec<OsString> = argv.into_iter().map(Into::into).collect();
+    if argv.len() <= 1 && io::stdin().is_terminal() && sys::sole_console_process() {
+        return started_outside_terminal();
+    }
     let settings = match cli::parse(argv) {
         Ok(settings) => settings,
         Err(Exit::Info(text)) => {

@@ -54,6 +54,25 @@ fn last_ten_lines_by_default() {
 }
 
 #[test]
+fn no_arguments_reads_stdin_not_the_start_menu_help() {
+    // From a shell, tail without arguments must keep reading standard input
+    // like GNU; the help-and-wait screen is only for a console of its own.
+    let s = Scratch::new("noargs");
+    let out = tail(&[], &s.0);
+    assert!(out.status.success());
+    assert!(out.stdout.is_empty());
+
+    let mut child = Command::new(TAIL).stdin(Stdio::piped()).stdout(Stdio::piped()).spawn().unwrap();
+    child.stdin.take().unwrap().write_all(numbered(12).as_bytes()).unwrap();
+    let out = child.wait_with_output().unwrap();
+    assert!(out.status.success());
+    assert_eq!(
+        String::from_utf8(out.stdout).unwrap(),
+        numbered(12).lines().skip(2).map(|l| format!("{l}\n")).collect::<String>()
+    );
+}
+
+#[test]
 fn headers_for_several_files() {
     let s = Scratch::new("headers");
     s.file("a.txt", b"1\n2\n");

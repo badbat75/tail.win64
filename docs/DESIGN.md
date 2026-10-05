@@ -121,10 +121,18 @@ For a Store app the recommended route is:
    WinUI 3 calling the engine through a `cdylib` C ABI.
 3. Package as MSIX for the Store. The CLI already ships this way:
    `packaging/msix/` holds a manifest template and `build-msix.ps1`. The
-   package is full trust (`runFullTrust`), has no Start menu entry
-   (`AppListEntry="none"`) and declares a console app execution alias, so
-   `tail` is on PATH after install. The manifest version is the Cargo version
-   reduced to `major.minor.patch.0`: MSIX only accepts a numeric quad and the
+   package is full trust (`runFullTrust`) and declares a console app
+   execution alias, so `tail` is on PATH after install. Partner Center
+   rejects headless packages (`AppListEntry="none"`) unless the account holds
+   the HeadlessAppBypass waiver, so the package keeps a Start menu entry.
+   Launched from there (or from Explorer), tail is the only process on a
+   console it did not inherit (`sys::sole_console_process`) with no
+   arguments and keyboard input; instead of reading the keyboard like GNU,
+   which would look like a hang, it prints the help and a hint to use a
+   terminal, then waits for Enter. In a shell the console is shared, so
+   `tail` without arguments still reads stdin. The manifest version is the
+   Cargo version reduced to `major.minor.patch.0`: MSIX only accepts a numeric
+   quad and the
    Store reserves the fourth field, so a prerelease and its final release map
    to the same MSIX version; bump the patch before shipping a second build of
    the same version.

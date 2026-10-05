@@ -26,6 +26,7 @@ mod imp {
     use windows_sys::Win32::Storage::FileSystem::{
         FILE_ID_INFO, FILE_TYPE_DISK, FileIdInfo, GetFileInformationByHandleEx, GetFileType,
     };
+    use windows_sys::Win32::System::Console::GetConsoleProcessList;
     use windows_sys::Win32::System::Threading::{OpenProcess, PROCESS_SYNCHRONIZE, WaitForSingleObject};
 
     pub fn file_id(file: &File) -> io::Result<FileId> {
@@ -70,6 +71,16 @@ mod imp {
             alive
         }
     }
+
+    pub fn sole_console_process() -> bool {
+        // A shell shares its console with the commands it runs, so the list
+        // holds at least two processes; a console created just for us (Start
+        // menu, Explorer double-click) holds only this one.
+        let mut pids = [0u32; 2];
+        // SAFETY: the buffer is valid for writes of `pids.len()` process ids.
+        let count = unsafe { GetConsoleProcessList(pids.as_mut_ptr(), pids.len() as u32) };
+        count == 1
+    }
 }
 
 #[cfg(not(windows))]
@@ -91,6 +102,10 @@ mod imp {
     pub fn process_alive(pid: u32) -> bool {
         std::path::Path::new(&format!("/proc/{pid}")).exists()
     }
+
+    pub fn sole_console_process() -> bool {
+        false
+    }
 }
 
 /// Returns the identity of an open file.
@@ -106,6 +121,12 @@ pub fn is_regular_file(file: &File) -> bool {
 /// True while the process `pid` is running (used by `--pid`).
 pub fn process_alive(pid: u32) -> bool {
     imp::process_alive(pid)
+}
+
+/// True when no other process shares our console: tail was started from the
+/// Start menu or Explorer in a window of its own, not from a terminal.
+pub fn sole_console_process() -> bool {
+    imp::sole_console_process()
 }
 
 /// Standard input as a `File` when it is redirected from a regular file
