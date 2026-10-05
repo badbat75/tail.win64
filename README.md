@@ -40,7 +40,12 @@ cargo test                      # unit + end-to-end tests
 .\packaging\msix\build-msix.ps1                  # target\msix\tail-win_1.0.0.0_x64.msix (unsigned)
 .\packaging\msix\build-msix.ps1 -Arch arm64      # needs: rustup target add aarch64-pc-windows-msvc
 .\packaging\msix\build-msix.ps1 -CertificateThumbprint <sha1>   # signed, for sideloading
+.\packaging\msix\build-msix.ps1 -SkipCertification              # no App Certification Kit run
 ```
+
+After packing, the script runs the Windows App Certification Kit (the checks
+Partner Center applies) and writes `target\msix\wack-report.xml`; it fails if
+the kit reports FAIL. `appcert.exe` needs elevation, so expect a UAC prompt.
 
 Requires the Windows SDK (`makeappx.exe`, `signtool.exe`). The package has no
 Start menu entry; it registers an app execution alias, so `tail` is on PATH

@@ -17,8 +17,15 @@
   For a Store submission leave it unsigned: Partner Center signs it. To sign a
   sideload build, the certificate subject must equal -Publisher.
 
+  After packing, the Windows App Certification Kit (the same checks Partner
+  Center runs) tests the package and writes target\msix\wack-report.xml.
+  appcert.exe needs elevation, so this shows a UAC prompt; the script fails
+  when the kit reports FAIL. -SkipCertification skips it.
+
 .EXAMPLE
   .\packaging\msix\build-msix.ps1
+.EXAMPLE
+  .\packaging\msix\build-msix.ps1 -SkipCertification
 .EXAMPLE
   .\packaging\msix\build-msix.ps1 -CertificateThumbprint 0123ABCD...
 #>
@@ -32,7 +39,8 @@ param(
     [string]$CertificateThumbprint,
     [string]$PfxPath,
     [SecureString]$PfxPassword,
-    [switch]$SkipBuild
+    [switch]$SkipBuild,
+    [switch]$SkipCertification
 )
 
 $ErrorActionPreference = 'Stop'
@@ -103,3 +111,24 @@ if ($CertificateThumbprint -or $PfxPath) {
 }
 
 Write-Host "tail-win $crateVersion -> $msix (MSIX version $msixVersion)"
+
+if (-not $SkipCertification) {
+    $appcert = Join-Path ${env:ProgramFiles(x86)} 'Windows Kits\10\App Certification Kit\appcert.exe'
+    if (-not (Test-Path $appcert)) { throw "$appcert not found. Install the Windows SDK or pass -SkipCertification." }
+    $report = Join-Path $out 'wack-report.xml'
+    Remove-Item $report -ErrorAction SilentlyContinue
+    # appcert.exe demands elevation; "reset" clears the state of a previous run.
+    $cmd = "`"`"$appcert`" reset && `"$appcert`" test -appxpackagepath `"$msix`" -reportoutputpath `"$report`"`""
+    Write-Host 'Running the Windows App Certification Kit (elevated, takes a few minutes)...'
+    Start-Process cmd.exe -ArgumentList "/c $cmd" -Verb RunAs -Wait -WindowStyle Hidden
+    if (-not (Test-Path $report)) { throw "The certification kit wrote no report ($report)." }
+
+    $xml = [xml](Get-Content $report -Raw)
+    $overall = $xml.REPORT.OVERALL_RESULT
+    foreach ($test in $xml.SelectNodes('//TEST')) {
+        $result = $test.SelectSingleNode('RESULT').InnerText
+        if ($result -ne 'PASS') { Write-Host "  [$result] $($test.GetAttribute('NAME'))" }
+    }
+    Write-Host "Certification: $overall (report: $report)"
+    if ($overall -eq 'FAIL') { throw 'The Windows App Certification Kit reported FAIL.' }
+}

@@ -18,6 +18,9 @@ All four must pass before a change is done.
 .\packaging\msix\build-msix.ps1          # MSIX in target\msix (needs the Windows SDK)
 ```
 
+The script then runs the Windows App Certification Kit (UAC prompt; report in
+`target\msix\wack-report.xml`). Pass `-SkipCertification` in non-interactive runs.
+
 The MSIX version comes from `Cargo.toml`; never hard-code it in
 `packaging/msix/AppxManifest.xml` (its `{{...}}` tokens are filled by the script).
 Likewise `build.rs` embeds the exe's VERSIONINFO resource from `Cargo.toml`
