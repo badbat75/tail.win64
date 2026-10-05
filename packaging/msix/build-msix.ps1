@@ -7,7 +7,8 @@
   tokens filled) under target\msix\stage, then runs makeappx. The package
   version comes from Cargo.toml: MSIX needs a numeric quad, so
   "1.0.0-beta.1" becomes "1.0.0.0". The fourth field stays 0 because the
-  Microsoft Store reserves it.
+  Microsoft Store reserves it. The .msix file name keeps the full crate
+  version (tail-win_1.0.0-beta.1_x64.msix).
 
   The identity defaults are the Partner Center values of the reserved Store
   product "tail for Windows" (Product management > Product identity); the
@@ -91,7 +92,9 @@ $manifest = (Get-Content (Join-Path $here 'AppxManifest.xml') -Raw).
 if ($manifest -match '\{\{\w+\}\}') { throw "Unfilled manifest token: $($Matches[0])" }
 [IO.File]::WriteAllText((Join-Path $stage 'AppxManifest.xml'), $manifest, [Text.UTF8Encoding]::new($false))
 
-$msix = Join-Path $out "tail-win_${msixVersion}_$Arch.msix"
+# The file name keeps the crate version (with any pre-release tag) so a beta
+# build is recognizable; the manifest can only carry the numeric quad.
+$msix = Join-Path $out "tail-win_${crateVersion}_$Arch.msix"
 & (Find-SdkTool 'makeappx.exe') pack /o /h SHA256 /d $stage /p $msix
 if ($LASTEXITCODE -ne 0) { throw 'makeappx pack failed.' }
 

@@ -37,7 +37,7 @@ cargo test                      # unit + end-to-end tests
 ## MSIX package
 
 ```powershell
-.\packaging\msix\build-msix.ps1                  # target\msix\tail-win_1.0.0.0_x64.msix (unsigned)
+.\packaging\msix\build-msix.ps1                  # target\msix\tail-win_1.0.0-beta.1_x64.msix (unsigned)
 .\packaging\msix\build-msix.ps1 -Arch arm64      # needs: rustup target add aarch64-pc-windows-msvc
 .\packaging\msix\build-msix.ps1 -CertificateThumbprint <sha1>   # signed, for sideloading
 .\packaging\msix\build-msix.ps1 -SkipCertification              # no App Certification Kit run
@@ -50,11 +50,14 @@ the kit reports FAIL. `appcert.exe` needs elevation, so expect a UAC prompt.
 Requires the Windows SDK (`makeappx.exe`, `signtool.exe`). The package has no
 Start menu entry; it registers an app execution alias, so `tail` is on PATH
 after install. The MSIX version is derived from `Cargo.toml`
-(`1.0.0-beta.1` becomes `1.0.0.0`; the Store reserves the fourth field).
+(`1.0.0-beta.1` becomes `1.0.0.0` inside the package, the Store reserves the
+fourth field; the file name keeps the full version).
 To sideload, the certificate subject must equal `-Publisher` and the
 certificate must be trusted on the machine. The package identity defaults to
 the Store reservation (`BadBat75.tailforWindows`, publisher
 `CN=932406D5-4DDE-483C-9D6C-7517FB42206B`), so the unsigned package can be
-submitted to Partner Center as is.
+submitted to Partner Center as is. The Store listing texts and screenshots
+are versioned in [packaging/store](packaging/store/listing.md).
 
 Design rationale and Windows-specific decisions: [docs/DESIGN.md](docs/DESIGN.md).
+Privacy: [PRIVACY.md](PRIVACY.md) (tail collects no data).
