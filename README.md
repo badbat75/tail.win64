@@ -52,8 +52,8 @@ registers an app execution alias, so `tail` is on PATH after install. Its
 Start menu entry (required by the Store) opens a console with the help.
 The MSIX version is derived from `Cargo.toml` (`1.0.0` becomes `1.0.0.0`
 inside the package, the Store reserves the fourth field). Betas set it
-explicitly under `[package.metadata.msix]`: `0.99.N.0` is beta N of 1.0.0.
-The file name keeps the full crate version (`1.0.0-beta.1`).
+explicitly under `[package.metadata.msix]`: beta 1 shipped as `1.0.0.0`, so
+beta N is `1.0.N.0`. The file name keeps the full crate version (`1.0.0-beta.2`).
 To sideload, the certificate subject must equal `-Publisher` and the
 certificate must be trusted on the machine. The package identity defaults to
 the Store reservation (`BadBat75.tailforWindows`, publisher

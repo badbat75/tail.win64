@@ -8,7 +8,7 @@
   version comes from Cargo.toml: MSIX needs a numeric quad, so
   "1.0.0-beta.1" becomes "1.0.0.0". The fourth field stays 0 because the
   Microsoft Store reserves it. A `version` under [package.metadata.msix]
-  overrides it (betas use 0.99.N.0, see Cargo.toml). The .msix file name
+  overrides it (betas use 1.0.N.0, see Cargo.toml). The .msix file name
   keeps the full crate version (tail-win_1.0.0-beta.1_x64.msix).
 
   The identity defaults are the Partner Center values of the reserved Store

@@ -134,6 +134,6 @@ For a Store app the recommended route is:
    Cargo version reduced to `major.minor.patch.0`: MSIX only accepts a numeric
    quad and the Store reserves the fourth field, so it cannot carry a
    prerelease tag. Betas therefore set `[package.metadata.msix] version` in
-   `Cargo.toml` to `0.99.N.0` (beta N of 1.0.0): the installed package shows
-   it is a beta, and the final `1.0.0.0` still sorts after it (Store versions
-   can only grow). Drop the override for the release.
+   `Cargo.toml`. Beta 1 reached the Store as `1.0.0.0` and Store versions can
+   only grow, so beta N ships as `1.0.N.0`. Drop the override for the release,
+   whose derived version must sort above the last beta.

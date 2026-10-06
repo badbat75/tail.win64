@@ -7,12 +7,13 @@ description = "A native Windows port of GNU tail (clean-room, behavior-compatibl
 license = "MIT"
 repository = "https://github.com/badbat75/tail.win64"
 
-# MSIX package version for the beta builds (read by packaging/msix/build-msix.ps1):
-# 0.99.N.0 is beta N of 1.0.0, so the Store version shows it is a beta and the
-# final 1.0.0.0 still sorts after it. Remove it for the 1.0.0 release; without
-# it the package version is major.minor.patch.0 of the crate version.
+# MSIX package version for the beta builds (read by packaging/msix/build-msix.ps1).
+# Beta 1 reached the Store as 1.0.0.0 and Store versions can never go down, so
+# beta N ships as 1.0.N.0 (the fourth field is reserved by the Store). Without
+# this override the package version is major.minor.patch.0 of the crate version,
+# so the next release must also sort above the last beta.
 [package.metadata.msix]
-version = "0.99.2.0"
+version = "1.0.2.0"
 
 [lib]
 name = "tail_win"
